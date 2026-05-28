@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="TM Snags">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1A2E44">
+<meta name="description" content="Thula Moya Solar - Post-installation snag list">
+<title>TM Snag List</title>
+
+<!-- PWA Manifest inline as data URI so it works from a single file -->
+<link rel="manifest" href="data:application/json;charset=utf-8,%7B%22name%22%3A%22Thula%20Moya%20Snag%20List%22%2C%22short_name%22%3A%22TM%20Snags%22%2C%22description%22%3A%22Post-installation%20snag%20list%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%231A2E44%22%2C%22theme_color%22%3A%22%231A2E44%22%2C%22orientation%22%3A%22portrait%22%2C%22icons%22%3A%5B%7B%22src%22%3A%22data%3Aimage%2Fsvg%2Bxml%2C%253Csvg%2520xmlns%3D%2527http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%2527%2520viewBox%3D%270%25200%252060%252060%2527%253E%253Crect%2520width%3D%252760%2527%2520height%3D%252760%2527%2520fill%3D%2527%25231A2E44%2527%2520rx%3D%252712%2527%2F%253E%253Ctext%2520x%3D%252730%2527%2520y%3D%252742%2527%2520text-anchor%3D%2527middle%2527%2520font-size%3D%252732%2527%253E%25E2%2598%2580%253C%2Ftext%253E%253C%2Fsvg%253E%22%2C%22sizes%22%3A%22192x192%22%2C%22type%22%3A%22image%2Fsvg%2Bxml%22%2C%22purpose%22%3A%22any%20maskable%22%7D%5D%7D">
+
+<!-- Apple touch icon (orange solar icon) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect width='180' height='180' fill='%231A2E44' rx='40'/><text x='90' y='125' text-anchor='middle' font-size='100'>☀️</text><rect x='20' y='145' width='140' height='8' fill='%23E8671A' rx='4'/></svg>">
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(0,0,0,0);-webkit-touch-callout:none}
+:root{
+  --orange:#E8671A;--dark:#1A2E44;
+  --bg:#FFFFFF;--bg2:#F4F5F7;--bg3:#E9EAEC;
+  --bdr:#DDE0E6;--bdr2:#C8CCD4;
+  --txt:#1C1E24;--muted:#6B7280;
+  --safe-b:env(safe-area-inset-bottom,0px);
+  --safe-t:env(safe-area-inset-top,0px);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+}
+html{height:100%;-webkit-text-size-adjust:100%;text-size-adjust:100%}
+body{font-family:var(--font);font-size:16px;color:var(--txt);background:var(--bg2);min-height:100%;overscroll-behavior:none}
+#app{max-width:540px;margin:0 auto;background:var(--bg);min-height:100vh;display:flex;flex-direction:column}
+
+/* HEADER */
+#hdr{background:var(--dark);color:#fff;padding:14px 16px 12px;padding-top:calc(14px + var(--safe-t));display:flex;align-items:center;gap:12px;flex-shrink:0}
+#logo-wrap{width:46px;height:46px;border:1.5px dashed rgba(255,255,255,.35);border-radius:8px;flex-shrink:0;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center}
+#logo-wrap img{width:100%;height:100%;object-fit:contain;display:none}
+#logo-wrap .hint{font-size:9px;color:rgba(255,255,255,.5);text-align:center;line-height:1.4;pointer-events:none}
+#logo-inp{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+#hdr-info{flex:1;min-width:0}
+#hdr-title{font-size:15px;font-weight:600}
+#hdr-sub{font-size:11px;color:#91B4D4;margin-top:1px}
+#hdr-badge{background:rgba(255,255,255,.13);border-radius:20px;padding:3px 10px;font-size:11px;color:#C8DDEF;white-space:nowrap;flex-shrink:0}
+.orange-bar{height:4px;background:var(--orange);flex-shrink:0}
+
+/* INSTALL BANNER */
+#inst-banner{background:#0F2035;color:#fff;padding:10px 14px;font-size:13px;display:none;align-items:center;gap:10px;flex-shrink:0}
+#inst-banner span{flex:1;line-height:1.4}
+#inst-banner .ibtn{background:var(--orange);color:#fff;border:none;border-radius:6px;padding:7px 13px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font);white-space:nowrap}
+#inst-banner .icls{background:none;border:none;color:rgba(255,255,255,.5);font-size:20px;cursor:pointer;padding:0 4px;font-family:var(--font)}
+
+/* PROJECT */
+#proj{background:var(--bg2);padding:14px 16px;border-bottom:1px solid var(--bdr);display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.row2{display:flex;gap:10px}
+.row2 .fg{flex:1}
+.fg{display:flex;flex-direction:column;gap:4px}
+.fg label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.fg input,.fg select,.fg textarea{border:1px solid var(--bdr2);border-radius:8px;padding:10px 12px;font-size:16px;font-family:var(--font);background:var(--bg);color:var(--txt);width:100%;-webkit-appearance:none;appearance:none;outline:none}
+.fg select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath fill='%236B7280' d='M5 7L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(232,103,26,.15)}
+
+/* TABS */
+#tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.tab-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:9px 4px 8px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);background:transparent;border:none;border-bottom:2.5px solid transparent;cursor:pointer;font-family:var(--font);-webkit-appearance:none}
+.tab-btn .ico{font-size:20px;line-height:1}
+.tab-btn.on{color:var(--dark);border-bottom-color:var(--orange)}
+
+/* PANELS */
+.panel{display:none;padding:16px;flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.panel.on{display:block}
+
+/* SNAGS */
+.panel-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.panel-hdr h3{font-size:16px;font-weight:600}
+#add-btn{background:var(--orange);color:#fff;border:none;border-radius:22px;padding:10px 18px;font-size:14px;font-weight:700;font-family:var(--font);cursor:pointer;-webkit-appearance:none}
+.empty-st{text-align:center;padding:3rem 1rem;color:var(--muted)}
+.empty-st .eico{font-size:48px;margin-bottom:12px;opacity:.3}
+.snag-card{border:1px solid var(--bdr);border-radius:12px;padding:14px;margin-bottom:12px;background:var(--bg)}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-num{font-size:11px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.06em}
+.card-del{background:var(--bg2);border:1px solid var(--bdr);border-radius:7px;padding:6px 11px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--font);-webkit-appearance:none}
+.fstack{display:flex;flex-direction:column;gap:11px}
+.pill-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+.pill-row{display:flex;gap:6px;flex-wrap:wrap}
+.pill{padding:8px 15px;border-radius:22px;font-size:14px;font-weight:500;border:1.5px solid var(--bdr2);background:var(--bg);color:var(--muted);cursor:pointer;font-family:var(--font);-webkit-appearance:none}
+.p-high{background:#FCEBEB;color:#791F1F;border-color:#F0A0A0}
+.p-med{background:#FAEEDA;color:#633806;border-color:#F0C878}
+.p-low{background:#EAF3DE;color:#27500A;border-color:#9FCC78}
+.p-open{background:#FAECE7;color:#993C1D;border-color:#F5BCBC}
+.p-prog{background:#FAEEDA;color:#854F0B;border-color:#F0C878}
+.p-done{background:#EAF3DE;color:#3B6D11;border-color:#9FCC78}
+.p-na{background:var(--bg3);color:var(--muted)}
+
+/* PHOTOS */
+.ph-wrap{position:relative}
+.ph-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border:1.5px dashed var(--bdr2);border-radius:10px;background:var(--bg2);color:var(--muted);font-size:14px;font-family:var(--font);cursor:pointer;-webkit-appearance:none}
+.ph-inp{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+.pgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.pthumb{position:relative;width:72px;height:72px;border-radius:8px;overflow:hidden;border:1px solid var(--bdr);flex-shrink:0}
+.pthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.pdel{position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.65);color:#fff;border:none;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-appearance:none;line-height:1}
+
+/* CHECKLIST */
+.cl-notice{background:var(--bg2);border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--muted);margin-bottom:14px;line-height:1.5}
+.cl-sec{margin-bottom:16px}
+.cl-sec-title{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px;padding-bottom:7px;border-bottom:1px solid var(--bdr)}
+.cl-tag{font-size:10px;padding:2px 7px;border-radius:20px;background:rgba(232,103,26,.12);color:var(--orange);font-weight:700;margin-left:5px}
+.ci{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.ci:last-child{border-bottom:none}
+.ci-lbl{flex:1;font-size:14px;line-height:1.45}
+.ci-btns{display:flex;gap:4px;flex-shrink:0}
+.cibtn{padding:6px 10px;border-radius:14px;font-size:12px;font-weight:700;border:1.5px solid var(--bdr2);background:var(--bg);color:var(--muted);cursor:pointer;font-family:var(--font);min-width:38px;-webkit-appearance:none}
+.cibtn.pass{background:#EAF3DE;color:#27500A;border-color:#9FCC78}
+.cibtn.fail{background:#FCEBEB;color:#791F1F;border-color:#F0A0A0}
+.cibtn.na{background:var(--bg3);color:var(--muted)}
+.flag-btn{background:none;border:none;font-size:20px;cursor:pointer;padding:2px;flex-shrink:0;opacity:.35;-webkit-appearance:none}
+.flag-btn.on{opacity:1}
+.ph-group-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin:12px 0 8px}
+
+/* SUMMARY */
+.sum-grid{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.sum-card{flex:1;min-width:calc(50% - 5px);background:var(--bg2);border:1px solid var(--bdr);border-radius:12px;padding:14px;text-align:center}
+.sum-n{font-size:28px;font-weight:700;line-height:1}
+.sum-l{font-size:12px;color:var(--muted);margin-top:4px;font-weight:500}
+.srow{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--bdr)}
+.srow:last-child{border-bottom:none}
+.sr-n{font-size:12px;color:var(--muted);flex-shrink:0;font-weight:700;min-width:26px;margin-top:1px}
+.sr-b{flex:1;font-size:14px;line-height:1.4}
+.sr-a{font-size:12px;color:var(--muted);margin-top:2px}
+.sbadge{flex-shrink:0;font-size:11px;padding:3px 9px;border-radius:20px;font-weight:700;white-space:nowrap}
+
+/* EXPORT */
+#exp-bar{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;padding-bottom:calc(12px + var(--safe-b));border-top:1px solid var(--bdr);background:var(--bg2);flex-shrink:0}
+.ebtn{flex:1;min-width:calc(50% - 4px);padding:12px 8px;border:1px solid var(--bdr2);border-radius:10px;background:var(--bg);color:var(--txt);font-size:13px;font-weight:600;font-family:var(--font);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;-webkit-appearance:none}
+.ebtn.dk{background:var(--dark);color:#fff;border-color:var(--dark)}
+.ebtn.og{background:var(--orange);color:#fff;border-color:var(--orange)}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="inst-banner">
+    <span id="inst-msg">📲 <strong>Add to Home Screen</strong> to use like an app — works offline!</span>
+    <button type="button" class="ibtn" onclick="showInstallHelp()">How to install</button>
+    <button type="button" class="icls" onclick="this.parentElement.style.display='none'">✕</button>
+  </div>
+
+  <div id="hdr">
+    <div id="logo-wrap">
+      <img id="hdr-logo" src="" alt="Logo">
+      <div class="hint">📷<br>Logo</div>
+      <input type="file" id="logo-inp" accept="image/*" onchange="uploadLogo(this)">
+    </div>
+    <div id="hdr-info">
+      <div id="hdr-title">Thula Moya Snag List</div>
+      <div id="hdr-sub">Post-installation inspection</div>
+    </div>
+    <div id="hdr-badge">0 snags</div>
+  </div>
+  <div class="orange-bar"></div>
+
+  <div id="proj">
+    <div class="fg"><label>Site / project name</label><input type="text" id="f-site" placeholder="e.g. Midrand Warehouse" autocomplete="off" autocapitalize="words"></div>
+    <div class="row2">
+      <div class="fg"><label>Client</label><input type="text" id="f-client" placeholder="Client name" autocomplete="off" autocapitalize="words"></div>
+      <div class="fg"><label>Job ref</label><input type="text" id="f-ref" placeholder="TM-2025-041" autocomplete="off"></div>
+    </div>
+    <div class="fg"><label>Installation type</label>
+      <select id="f-type" onchange="onTypeChange()">
+        <option value="">Select type...</option>
+        <option>Commercial rooftop</option>
+        <option>Ground-mounted</option>
+        <option>Residential rooftop</option>
+      </select>
+    </div>
+    <div class="row2">
+      <div class="fg"><label>Inspector</label><input type="text" id="f-inspector" placeholder="Full name" autocomplete="off" autocapitalize="words"></div>
+      <div class="fg"><label>Date</label><input type="date" id="f-date"></div>
+    </div>
+  </div>
+
+  <div id="tabs">
+    <button type="button" class="tab-btn on" onclick="showTab('snags',this)"><span class="ico">📋</span>Snags</button>
+    <button type="button" class="tab-btn" onclick="showTab('checklist',this)"><span class="ico">✅</span>Checklist</button>
+    <button type="button" class="tab-btn" onclick="showTab('photos',this)"><span class="ico">📷</span>Photos</button>
+    <button type="button" class="tab-btn" onclick="showTab('summary',this)"><span class="ico">📊</span>Summary</button>
+  </div>
+
+  <div class="panel on" id="panel-snags">
+    <div class="panel-hdr"><h3>Snag items</h3><button type="button" id="add-btn" onclick="addSnag()">＋ Add snag</button></div>
+    <div id="snag-list"></div>
+    <div class="empty-st" id="snag-empty"><div class="eico">📋</div><p>No snags yet<br><strong>Tap "Add snag"</strong> to begin</p></div>
+  </div>
+
+  <div class="panel" id="panel-checklist"><div id="cl-wrap"></div></div>
+
+  <div class="panel" id="panel-photos">
+    <div class="panel-hdr"><h3>Photo log</h3><span id="ph-count" style="font-size:14px;color:var(--muted)">0 photos</span></div>
+    <div class="ph-wrap" style="margin-bottom:16px">
+      <button type="button" class="ph-btn"><span style="font-size:24px">📷</span><span><strong>Add site photos</strong><br><span style="font-size:12px">Camera or gallery</span></span></button>
+      <input type="file" accept="image/*" multiple class="ph-inp" id="global-ph" onchange="onGlobalPh(this)">
+    </div>
+    <div id="ph-log"></div>
+  </div>
+
+  <div class="panel" id="panel-summary">
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-n" id="s-tot">0</div><div class="sum-l">Total</div></div>
+      <div class="sum-card"><div class="sum-n" id="s-op" style="color:#993C1D">0</div><div class="sum-l">Open</div></div>
+      <div class="sum-card"><div class="sum-n" id="s-pr" style="color:#854F0B">0</div><div class="sum-l">In progress</div></div>
+      <div class="sum-card"><div class="sum-n" id="s-dn" style="color:#3B6D11">0</div><div class="sum-l">Resolved</div></div>
+    </div>
+    <div id="sum-body" style="color:var(--muted);text-align:center;padding:1rem;font-size:15px">No snags logged yet</div>
+  </div>
+
+  <div id="exp-bar">
+    <button type="button" class="ebtn" onclick="doCopy()">📋 Copy</button>
+    <button type="button" class="ebtn" onclick="doCSV()">📥 CSV</button>
+    <button type="button" class="ebtn og" onclick="doShare()">📤 Share</button>
+    <button type="button" class="ebtn dk" onclick="doPrint()">🖨 Print/PDF</button>
+  </div>
+
+</div>
+
+<script>
+var snags=[],photos=[],checkState={},logoUrl=null,nextId=1;
+var deferredPrompt=null;
+
+var CATS=['Panels','Mounting/Racking','Inverter','Wiring-DC','Wiring-AC','Battery/Storage','Earthing','Commissioning','Health & Safety','Aesthetics','Other'];
+var ZONES={
+  'Commercial rooftop':['Roof-North','Roof-South','Roof-East','Roof-West','Plant room','Main DB','Sub DB','Cable tray','Perimeter/edge','Carport canopy','Other'],
+  'Ground-mounted':['Array row 1','Array row 2','Array row 3','Array row 4','Mounting structure','DC combiner box','Inverter pad','AC panel','Trenching/cabling','Fence/security','Other'],
+  'Residential rooftop':['Roof-main slope','Roof-secondary','Loft/ceiling','Garage','Distribution board','Meter box','Battery enclosure','Inverter wall','Exterior conduit','Other'],
+  '':['Roof','Plant room','DB room','Inverter area','Cable runs','Other']
+};
+var CL={
+  'Commercial rooftop':[
+    {s:'Site & structural',tag:'',items:['Structural engineer sign-off for roof loading','Roof membrane/sheeting integrity confirmed','Panel count matches approved design','Panel orientation and tilt per spec','Shading assessment documented','Adequate walkway/maintenance access','Roof penetrations sealed and waterproofed']},
+    {s:'Mounting & racking',tag:'',items:['Rails secured to purlins/structural members','Rail spacing per manufacturer spec','Anti-corrosion at all penetrations','Flashing at all roof penetrations','Clamps torqued to spec','Rails earthed and bonded','No rail deflection or misalignment']},
+    {s:'PV modules & DC',tag:'',items:['Panel serial numbers recorded','String config matches design','MC4 connectors fully mated','No exposed DC outside conduit','DC cable UV-rated and supported','DC isolator installed and labelled','Voc per string within spec','Isc per string within spec','IR test completed']},
+    {s:'Inverter & AC',tag:'',items:['Inverter mounted per requirements','Adequate ventilation clearance','AC isolator between inverter and DB','Correct breaker size','RCD protection on AC output','Neutral and earth not swapped','AC output within spec','Inverter commissioned','Anti-islanding verified','Generation meter installed']},
+    {s:'Battery/storage',tag:'optional',items:['Battery enclosure rated for environment','BMS operational','Battery fuse correctly rated','Adequate ventilation','SoC at commissioning recorded','Charge/discharge settings configured']},
+    {s:'Earthing & lightning',tag:'',items:['Earth electrode tested (<10 ohm)','All metalwork bonded','SPDs on DC and AC','Earth cable sizing correct','Lightning protection installed (if specified)']},
+    {s:'Compliance & safety',tag:'',items:['COC issued by registered electrician','All isolators and conduits labelled','Warning labels on DC isolators and inverter','SANS 10142 confirmed','Registered with municipality/utility','Grid-tie/export agreement in place','Fire risk assessment completed','Emergency shutdown procedure posted']},
+    {s:'Commissioning & handover',tag:'',items:['System energised and generating confirmed','Monitoring portal set up','Client walkthrough done','Warranty docs handed over','As-built drawings provided','O&M manual provided']}
+  ],
+  'Ground-mounted':[
+    {s:'Site prep & civil',tag:'ground-mount',items:['Site survey and soil assessment done','Planning/approval obtained','Ground clearance done','Cable trenching depth per design','Trenches backfilled and marked','Access road suitable for maintenance','Security fencing installed and gated','Drainage adequate - no pooling']},
+    {s:'Foundation & structure',tag:'ground-mount',items:['Foundation type matches soil report','Pile/anchor depths verified','Structural steel galvanised or treated','Frame levelness checked across all rows','Row spacing allows maintenance access','Tilt angle matches design spec','All bolts torqued to spec','No structural deflection or movement']},
+    {s:'PV modules & DC',tag:'',items:['Panel serial numbers recorded per row','String config matches design','MC4 connectors fully mated','DC cables in conduit/cable tray','No exposed DC above ground outside conduit','DC cable UV-rated on racking','DC combiner box installed and weatherproof','DC isolator installed and labelled','Voc per string within spec','Isc per string within spec','IR test completed']},
+    {s:'Inverter station & AC',tag:'ground-mount',items:['Inverter enclosure IP65+ rated','Inverter pad level, drained, accessible','AC cable in conduit to POC','AC isolator at POC','Correct fuse/breaker rating','RCD protection in place','Neutral and earth not swapped','AC output within spec','Inverter commissioned and SCADA live','Anti-islanding verified','Export meter installed']},
+    {s:'Battery/storage',tag:'optional',items:['Battery container outdoor rated','BMS operational','Battery fuse correctly rated','Thermal management operational','SoC at commissioning recorded','Charge/discharge settings configured']},
+    {s:'Earthing & lightning',tag:'ground-mount',items:['Earth grid across array field','All racking bonded to earth grid','Earth electrode tested (<10 ohm)','SPDs on DC and AC','Lightning masts installed (if specified)','Earth cable sizing correct']},
+    {s:'Compliance & safety',tag:'',items:['COC issued by registered electrician','All switchgear labelled','Warning labels on all DC isolators','SANS 10142 confirmed','Grid connection agreement in place','Safety signs at fence/gate','Emergency shutdown accessible','Fire extinguishers at inverter station']},
+    {s:'Commissioning & handover',tag:'',items:['System energised and generating confirmed','SCADA/monitoring portal active','PR baseline recorded','Client walkthrough done','Warranty and equipment docs handed over','As-built drawings and string layouts provided','O&M manual and maintenance schedule provided']}
+  ],
+  'Residential rooftop':[
+    {s:'Site & structural',tag:'',items:['Roof condition suitable - no damage','Roof age and lifespan assessed','Panel count matches design','Panel orientation and tilt per spec','Shading from trees/chimneys assessed','No penetrations near drainage valleys']},
+    {s:'Mounting & racking',tag:'',items:['Rail brackets fixed to rafters (not just sheeting)','Rail spacing per spec','All penetrations flashed and sealed','Waterproofing tested','Clamps torqued to spec','Rails earthed and bonded','No visible rail deflection']},
+    {s:'PV modules & DC',tag:'',items:['Panel serial numbers recorded','String config matches design','MC4 connectors fully mated','DC cables clipped under panels','No exposed DC outside conduit on roof','DC isolator installed and labelled','Voc within spec','IR test completed']},
+    {s:'Inverter & AC',tag:'',items:['Inverter location suitable (shaded, ventilated)','AC isolator between inverter and DB','Correct breaker size in DB','RCD protection present','Neutral and earth not swapped','No double-tapping of existing breakers','AC output within spec','Inverter commissioned and monitoring active','Anti-islanding verified']},
+    {s:'Battery/storage',tag:'optional',items:['Battery in approved enclosure','BMS operational','Battery fuse correctly rated','Ventilation adequate','SoC at commissioning recorded','Charge/discharge settings configured']},
+    {s:'Earthing',tag:'',items:['Earth electrode tested (<10 ohm)','All metalwork bonded','SPD on DC side','Earth cable sizing correct']},
+    {s:'Compliance & safety',tag:'',items:['COC issued by registered electrician','DB and isolators labelled','Warning labels on DC isolator and inverter','SANS 10142 confirmed','Notified to municipality/utility']},
+    {s:'Commissioning & handover',tag:'',items:['System energised and generating confirmed','Monitoring app set up on client device','Homeowner walkthrough done','Warranty docs handed over','As-built layout drawing provided','O&M and cleaning guide provided']}
+  ]
+};
+var CL_GENERIC=[
+  {s:'DC & modules',tag:'',items:['Panel serial numbers recorded','String config matches design','MC4 connectors mated','DC cables UV-rated and supported','DC isolator installed and labelled','Voc within spec','IR test completed']},
+  {s:'Inverter & AC',tag:'',items:['Inverter mounted correctly','AC isolator installed','Correct breaker size','RCD present','AC output within spec','Monitoring connected']},
+  {s:'Earthing & compliance',tag:'',items:['Earth electrode tested (<10 ohm)','All metalwork bonded','SPDs installed','COC issued','Labels and warnings in place']},
+  {s:'Handover',tag:'',items:['System generating confirmed','Client walkthrough done','Warranty docs handed over','As-built drawings provided']}
+];
+
+function h(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getType(){return document.getElementById('f-type').value;}
+function getZones(){return ZONES[getType()]||ZONES[''];}
+
+function readFile(file,cb){
+  var r=new FileReader();
+  r.onloadend=function(){if(r.result)cb(r.result);};
+  r.onerror=function(){alert('Could not read image. Please try again.');};
+  r.readAsDataURL(file);
+}
+function resetInp(inp){
+  try{inp.value='';}catch(e){}
+  try{inp.type='text';inp.type='file';}catch(e){}
+}
+
+/* LOGO */
+function uploadLogo(inp){
+  var f=inp.files&&inp.files[0];if(!f)return;
+  readFile(f,function(url){
+    logoUrl=url;
+    var img=document.getElementById('hdr-logo');img.src=url;img.style.display='block';
+    document.querySelector('#logo-wrap .hint').style.display='none';
+  });
+  resetInp(inp);
+}
+
+/* TABS */
+function showTab(name,btn){
+  var panels=document.querySelectorAll('.panel');
+  for(var i=0;i<panels.length;i++)panels[i].classList.remove('on');
+  var tabs=document.querySelectorAll('.tab-btn');
+  for(var i=0;i<tabs.length;i++)tabs[i].classList.remove('on');
+  document.getElementById('panel-'+name).classList.add('on');
+  btn.classList.add('on');
+  if(name==='summary')renderSummary();
+}
+
+/* SNAG CRUD */
+function addSnag(){
+  var id=nextId++;
+  snags.push({id:id,area:'',desc:'',cat:'',pri:'High',status:'Open',assignedTo:'',targetDate:'',notes:'',photos:[]});
+  renderSnags();
+  setTimeout(function(){
+    var cards=document.querySelectorAll('.snag-card');
+    if(cards.length)cards[cards.length-1].scrollIntoView({block:'start'});
+  },80);
+}
+function delSnag(id){
+  if(!confirm('Remove snag?'))return;
+  snags=snags.filter(function(s){return s.id!==id;});
+  photos=photos.filter(function(p){return p.sid!==id;});
+  renderSnags();renderPhotoLog();
+}
+function setField(id,key,val){
+  for(var i=0;i<snags.length;i++){if(snags[i].id===id){snags[i][key]=val;break;}}
+  updateBadge();
+}
+function setPri(id,val){
+  setField(id,'pri',val);
+  var map={High:'p-high',Medium:'p-med',Low:'p-low'};
+  var row=document.getElementById('pr-'+id);if(!row)return;
+  var btns=row.getElementsByTagName('button');
+  for(var i=0;i<btns.length;i++){btns[i].className='pill'+(btns[i].getAttribute('data-v')===val?' '+map[val]:'');}
+}
+function setSta(id,val){
+  setField(id,'status',val);
+  var map={Open:'p-open','In Progress':'p-prog',Resolved:'p-done','N/A':'p-na'};
+  var row=document.getElementById('st-'+id);if(!row)return;
+  var btns=row.getElementsByTagName('button');
+  for(var i=0;i<btns.length;i++){btns[i].className='pill'+(btns[i].getAttribute('data-v')===val?' '+(map[val]||''):'');}
+}
+function updateBadge(){var n=snags.length;document.getElementById('hdr-badge').textContent=n+' snag'+(n!==1?'s':'');}
+
+/* RENDER SNAGS */
+function renderSnags(){
+  var el=document.getElementById('snag-list'),empty=document.getElementById('snag-empty');
+  if(!snags.length){el.innerHTML='';empty.style.display='block';updateBadge();return;}
+  empty.style.display='none';
+  var zones=getZones();
+  var priMap={High:'p-high',Medium:'p-med',Low:'p-low'};
+  var staMap={Open:'p-open','In Progress':'p-prog',Resolved:'p-done','N/A':'p-na'};
+  var html='';
+  for(var i=0;i<snags.length;i++){
+    var s=snags[i],id=s.id;
+    var zo='<option value="">Select area...</option>';
+    for(var z=0;z<zones.length;z++)zo+='<option value="'+h(zones[z])+'"'+(s.area===zones[z]?' selected':'')+'>'+zones[z]+'</option>';
+    var co='<option value="">Select category...</option>';
+    for(var c=0;c<CATS.length;c++)co+='<option value="'+h(CATS[c])+'"'+(s.cat===CATS[c]?' selected':'')+'>'+CATS[c]+'</option>';
+    var thumbs='';
+    for(var p=0;p<s.photos.length;p++)thumbs+='<div class="pthumb"><img src="'+s.photos[p].url+'" alt="Photo"><button type="button" class="pdel" onclick="delSnagPh('+id+','+p+')">&#215;</button></div>';
+    var priH='';var pris=['High','Medium','Low'];
+    for(var pi=0;pi<pris.length;pi++)priH+='<button type="button" class="pill'+(s.pri===pris[pi]?' '+priMap[pris[pi]]:'')+'" data-v="'+pris[pi]+'" onclick="setPri('+id+',\''+pris[pi]+'\')">'+pris[pi]+'</button>';
+    var staH='';var stats=['Open','In Progress','Resolved','N/A'];
+    for(var si2=0;si2<stats.length;si2++){var sv=stats[si2];staH+='<button type="button" class="pill'+(s.status===sv?' '+(staMap[sv]||''):'')+'" data-v="'+h(sv)+'" onclick="setSta('+id+',\''+sv.replace(/'/g,"\\'")+ '\')">'+sv+'</button>';}
+    html+='<div class="snag-card">'
+      +'<div class="card-hdr"><span class="card-num">Snag #'+(i+1)+'</span><button type="button" class="card-del" onclick="delSnag('+id+')">&#128465; Remove</button></div>'
+      +'<div class="fstack">'
+      +'<div class="row2"><div class="fg"><label>Area</label><select onchange="setField('+id+',\'area\',this.value)">'+zo+'</select></div>'
+      +'<div class="fg"><label>Category</label><select onchange="setField('+id+',\'cat\',this.value)">'+co+'</select></div></div>'
+      +'<div class="fg"><label>Description</label><textarea rows="3" style="resize:vertical;font-family:var(--font);font-size:16px" placeholder="Describe the issue clearly..." onchange="setField('+id+',\'desc\',this.value)">'+h(s.desc)+'</textarea></div>'
+      +'<div><div class="pill-lbl">Priority</div><div class="pill-row" id="pr-'+id+'">'+priH+'</div></div>'
+      +'<div><div class="pill-lbl">Status</div><div class="pill-row" id="st-'+id+'">'+staH+'</div></div>'
+      +'<div class="row2"><div class="fg"><label>Assigned to</label><input type="text" value="'+h(s.assignedTo)+'" placeholder="Name" autocomplete="off" autocapitalize="words" onchange="setField('+id+',\'assignedTo\',this.value)"></div>'
+      +'<div class="fg"><label>Target date</label><input type="date" value="'+h(s.targetDate)+'" onchange="setField('+id+',\'targetDate\',this.value)"></div></div>'
+      +'<div class="fg"><label>Notes / evidence</label><input type="text" value="'+h(s.notes)+'" placeholder="e.g. Photo IMG_0042" autocomplete="off" onchange="setField('+id+',\'notes\',this.value)"></div>'
+      +'<div><div class="pill-lbl" style="margin-bottom:8px">Photos</div>'
+      +'<div class="ph-wrap"><button type="button" class="ph-btn"><span style="font-size:22px">📷</span><span>Tap to take or attach a photo</span></button>'
+      +'<input type="file" accept="image/*" multiple class="ph-inp" onchange="onSnagPh('+id+',this)"></div>'
+      +'<div class="pgrid" id="pg-'+id+'">'+thumbs+'</div></div>'
+      +'</div></div>';
+  }
+  el.innerHTML=html;updateBadge();
+}
+
+/* PHOTOS */
+function onSnagPh(id,inp){
+  var files=inp.files;if(!files||!files.length)return;
+  var s=null;for(var i=0;i<snags.length;i++){if(snags[i].id===id){s=snags[i];break;}}if(!s)return;
+  var pending=files.length;
+  for(var i=0;i<files.length;i++){(function(file){readFile(file,function(url){s.photos.push({url:url,name:file.name});photos.push({sid:id,url:url,name:file.name});pending--;if(pending===0){renderSnags();renderPhotoLog();}});})(files[i]);}
+  resetInp(inp);
+}
+function delSnagPh(id,idx){
+  for(var i=0;i<snags.length;i++){if(snags[i].id===id){snags[i].photos.splice(idx,1);break;}}
+  photos=[];for(var i=0;i<snags.length;i++)for(var p=0;p<snags[i].photos.length;p++)photos.push({sid:snags[i].id,url:snags[i].photos[p].url,name:snags[i].photos[p].name});
+  renderSnags();renderPhotoLog();
+}
+function onGlobalPh(inp){
+  var files=inp.files;if(!files||!files.length)return;
+  var pending=files.length;
+  for(var i=0;i<files.length;i++){(function(file){readFile(file,function(url){photos.push({sid:null,url:url,name:file.name});pending--;if(pending===0)renderPhotoLog();});})(files[i]);}
+  resetInp(inp);
+}
+function renderPhotoLog(){
+  var total=photos.length;
+  document.getElementById('ph-count').textContent=total+' photo'+(total!==1?'s':'');
+  var el=document.getElementById('ph-log');if(!total){el.innerHTML='';return;}
+  var by={},order=[];
+  for(var i=0;i<photos.length;i++){
+    var p=photos[i],snagIdx=-1;
+    if(p.sid){for(var j=0;j<snags.length;j++){if(snags[j].id===p.sid){snagIdx=j;break;}}}
+    var k=p.sid?'Snag #'+(snagIdx+1)+(snags[snagIdx]&&snags[snagIdx].area?' - '+snags[snagIdx].area:''):'General site photos';
+    if(!by[k]){by[k]=[];order.push(k);}by[k].push(p);
+  }
+  var html='';
+  for(var ki=0;ki<order.length;ki++){var k=order[ki];html+='<div><div class="ph-group-title">'+k+'</div><div class="pgrid">';for(var i=0;i<by[k].length;i++)html+='<div class="pthumb"><img src="'+by[k][i].url+'" alt=""></div>';html+='</div></div>';}
+  el.innerHTML=html;
+}
+
+/* CHECKLIST */
+function onTypeChange(){renderSnags();buildChecklist();}
+function buildChecklist(){
+  var type=getType(),list=CL[type]||CL_GENERIC,wrap=document.getElementById('cl-wrap');
+  wrap.innerHTML='';checkState={};
+  var notice=document.createElement('div');notice.className='cl-notice';
+  notice.innerHTML=type?'Checklist for <strong>'+type+'</strong>. Change installation type above to update.':'Select an installation type above to load the full checklist.';
+  wrap.appendChild(notice);
+  for(var si=0;si<list.length;si++){
+    var sec=list[si],secDiv=document.createElement('div');secDiv.className='cl-sec';
+    secDiv.innerHTML='<div class="cl-sec-title">'+sec.s+(sec.tag?'<span class="cl-tag">'+sec.tag+'</span>':'')+'</div>';
+    for(var ii=0;ii<sec.items.length;ii++){
+      var k=si+'-'+ii;checkState[k]='';
+      var row=document.createElement('div');row.className='ci';
+      var lbl=document.createElement('span');lbl.className='ci-lbl';lbl.textContent=sec.items[ii];
+      var btns=document.createElement('div');btns.className='ci-btns';
+      var vals=['Pass','Fail','N/A'],cls=['pass','fail','na'],syms=['\u2713','\u2717','N/A'];
+      for(var vi=0;vi<vals.length;vi++){(function(val,cl,sym,key){var b=document.createElement('button');b.type='button';b.className='cibtn';b.id='cb-'+key+'-'+cl;b.textContent=sym;b.onclick=function(){setCi(key,val,cl);};btns.appendChild(b);})(vals[vi],cls[vi],syms[vi],k);}
+      var flag=document.createElement('button');flag.type='button';flag.className='flag-btn';flag.id='flag-'+k;flag.textContent='\uD83D\uDEA9';flag.onclick=function(){this.classList.toggle('on');};
+      row.appendChild(lbl);row.appendChild(btns);row.appendChild(flag);secDiv.appendChild(row);
+    }
+    wrap.appendChild(secDiv);
+  }
+}
+function setCi(k,val,cl){
+  checkState[k]=val;
+  var types=['pass','fail','na'];
+  for(var i=0;i<types.length;i++){var b=document.getElementById('cb-'+k+'-'+types[i]);if(b)b.className='cibtn'+(types[i]===cl?' '+cl:'');}
+}
+
+/* SUMMARY */
+function renderSummary(){
+  var t=snags.length,op=0,pr=0,dn=0;
+  for(var i=0;i<snags.length;i++){if(snags[i].status==='Open')op++;else if(snags[i].status==='In Progress')pr++;else if(snags[i].status==='Resolved')dn++;}
+  document.getElementById('s-tot').textContent=t;document.getElementById('s-op').textContent=op;document.getElementById('s-pr').textContent=pr;document.getElementById('s-dn').textContent=dn;
+  var el=document.getElementById('sum-body');if(!t){el.innerHTML='<span>No snags logged yet</span>';return;}
+  var bp={High:[],Medium:[],Low:[]};for(var i=0;i<snags.length;i++)if(bp[snags[i].pri])bp[snags[i].pri].push(snags[i]);
+  var pc={High:'#791F1F',Medium:'#633806',Low:'#27500A'},pb={High:'#FCEBEB',Medium:'#FAEEDA',Low:'#EAF3DE'};
+  var sc={Open:'#993C1D','In Progress':'#854F0B',Resolved:'#3B6D11','N/A':'#666'},sb={Open:'#FAECE7','In Progress':'#FAEEDA',Resolved:'#EAF3DE','N/A':'#f5f5f5'};
+  var html='';var pris=['High','Medium','Low'];
+  for(var pi=0;pi<pris.length;pi++){
+    var p=pris[pi];if(!bp[p].length)continue;
+    html+='<div style="margin-bottom:16px"><div style="margin-bottom:10px"><span style="display:inline-block;font-size:12px;padding:4px 12px;border-radius:20px;font-weight:700;background:'+pb[p]+';color:'+pc[p]+'">'+p+' priority - '+bp[p].length+'</span></div>';
+    for(var si2=0;si2<bp[p].length;si2++){var s=bp[p][si2],idx=-1;for(var xi=0;xi<snags.length;xi++){if(snags[xi].id===s.id){idx=xi;break;}}
+      html+='<div class="srow"><span class="sr-n">#'+(idx+1)+'</span><div class="sr-b">'+(s.desc||'(no description)')+'<div class="sr-a">'+(s.area||'')+'</div></div><span class="sbadge" style="background:'+sb[s.status]+';color:'+sc[s.status]+'">'+s.status+'</span></div>';}
+    html+='</div>';
+  }
+  el.innerHTML=html;
+}
+
+/* EXPORT */
+function doCopy(){
+  var site=document.getElementById('f-site').value||'',ins=document.getElementById('f-inspector').value||'',dt=document.getElementById('f-date').value||'';
+  var t='THULA MOYA - Snag List\nSite: '+site+' | Inspector: '+ins+' | Date: '+dt+'\n'+Array(41).join('-')+'\n';
+  for(var i=0;i<snags.length;i++){var s=snags[i];t+='\nSnag #'+(i+1)+' ['+s.pri+'] ['+s.status+']\nArea: '+s.area+' | Category: '+s.cat+'\nDesc: '+s.desc+'\n';if(s.assignedTo)t+='Assigned: '+s.assignedTo+' | Target: '+s.targetDate+'\n';if(s.notes)t+='Notes: '+s.notes+'\n';if(s.photos.length)t+='Photos: '+s.photos.length+'\n';}
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){alert('Copied!');}).catch(function(){fbCopy(t);});}else{fbCopy(t);}
+}
+function fbCopy(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:0;left:0;opacity:0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');alert('Copied!');}catch(e){alert('Copy failed.');}document.body.removeChild(ta);}
+function doCSV(){
+  var site=document.getElementById('f-site').value||'site',date=document.getElementById('f-date').value||new Date().toISOString().slice(0,10);
+  var rows='#,Area,Description,Category,Priority,Status,Assigned,Target,Notes,Photos\n';
+  for(var i=0;i<snags.length;i++){var s=snags[i];rows+='"'+(i+1)+'","'+s.area+'","'+s.desc.replace(/"/g,'""')+'","'+s.cat+'","'+s.pri+'","'+s.status+'","'+s.assignedTo+'","'+s.targetDate+'","'+s.notes.replace(/"/g,'""')+'","'+s.photos.length+'"\n';}
+  var blob=new Blob([rows],{type:'text/csv'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+  a.href=url;a.download='ThulaM_oya_'+site.replace(/\s+/g,'_')+'_'+date+'.csv';document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+}
+function doShare(){
+  var site=document.getElementById('f-site').value||'Site',ins=document.getElementById('f-inspector').value||'Inspector',dt=document.getElementById('f-date').value||'-';
+  var op=0,hi=0;for(var i=0;i<snags.length;i++){if(snags[i].status==='Open')op++;if(snags[i].pri==='High')hi++;}
+  var text='*THULA MOYA - Snag Report*\n*Site:* '+site+'\n*Inspector:* '+ins+'\n*Date:* '+dt+'\n*Total:* '+snags.length+' | *Open:* '+op+' | *High:* '+hi+'\n\n';
+  for(var i=0;i<snags.length;i++){var s=snags[i];text+=(i+1)+'. ['+s.pri+'] '+(s.desc||'(no description)')+(s.area?' - '+s.area:'')+' ('+s.status+')\n';}
+  if(navigator.share){navigator.share({title:'Thula Moya Snag Report',text:text}).catch(function(){});}
+  else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert('Report copied! Paste into WhatsApp.');}).catch(function(){fbCopy(text);});}
+  else{fbCopy(text);}
+}
+function doPrint(){
+  var site=document.getElementById('f-site').value||'-',client=document.getElementById('f-client').value||'-',ins=document.getElementById('f-inspector').value||'-',dt=document.getElementById('f-date').value||'-',ref=document.getElementById('f-ref').value||'-',type=getType()||'-';
+  var logoHtml=logoUrl?'<img src="'+logoUrl+'" style="height:44px;max-width:130px;object-fit:contain;margin-right:14px;vertical-align:middle">':'';
+  var op=0,res=0,hi=0;for(var i=0;i<snags.length;i++){if(snags[i].status==='Open')op++;if(snags[i].status==='Resolved')res++;if(snags[i].pri==='High')hi++;}
+  var rows='';
+  for(var i=0;i<snags.length;i++){
+    var s=snags[i],pBg=s.pri==='High'?'#FCEBEB':s.pri==='Medium'?'#FAEEDA':'#EAF3DE',pCl=s.pri==='High'?'#791F1F':s.pri==='Medium'?'#633806':'#27500A',sBg=s.status==='Open'?'#FAECE7':s.status==='In Progress'?'#FAEEDA':s.status==='Resolved'?'#EAF3DE':'#f5f5f5',sCl=s.status==='Open'?'#993C1D':s.status==='In Progress'?'#854F0B':s.status==='Resolved'?'#3B6D11':'#666';
+    rows+='<tr><td style="padding:6px 8px;border:1px solid #ddd;text-align:center;color:#888">'+(i+1)+'</td><td style="padding:6px 8px;border:1px solid #ddd">'+(s.area||'-')+'</td><td style="padding:6px 8px;border:1px solid #ddd">'+(s.desc||'-')+'</td><td style="padding:6px 8px;border:1px solid #ddd">'+(s.cat||'-')+'</td><td style="padding:6px 8px;border:1px solid #ddd;text-align:center"><span style="background:'+pBg+';color:'+pCl+';padding:2px 8px;border-radius:20px;font-size:11px">'+s.pri+'</span></td><td style="padding:6px 8px;border:1px solid #ddd;text-align:center"><span style="background:'+sBg+';color:'+sCl+';padding:2px 8px;border-radius:20px;font-size:11px">'+s.status+'</span></td><td style="padding:6px 8px;border:1px solid #ddd">'+(s.assignedTo||'-')+'</td><td style="padding:6px 8px;border:1px solid #ddd">'+(s.targetDate||'-')+'</td><td style="padding:6px 8px;border:1px solid #ddd">'+(s.notes||'-')+'</td></tr>';
+    if(s.photos.length){var th='';for(var p=0;p<s.photos.length;p++)th+='<img src="'+s.photos[p].url+'" style="width:80px;height:60px;object-fit:cover;border-radius:4px;border:1px solid #ddd;margin:2px">';rows+='<tr><td colspan="9" style="padding:6px 8px;border:1px solid #ddd;border-top:none"><div style="display:flex;flex-wrap:wrap;gap:4px">'+th+'</div></td></tr>';}
+  }
+  var phSec='';
+  if(photos.length){var th='';for(var i=0;i<photos.length;i++){var p=photos[i],idx=-1;for(var j=0;j<snags.length;j++){if(snags[j].id===p.sid){idx=j;break;}}th+='<div style="width:120px;text-align:center"><img src="'+p.url+'" style="width:120px;height:90px;object-fit:cover;border-radius:4px;border:1px solid #ddd"><div style="font-size:10px;color:#666;margin-top:3px">'+(p.sid&&idx>=0?'Snag #'+(idx+1):'General')+'</div></div>';}phSec='<div style="page-break-before:always"><h2 style="font-size:14px;color:#1A2E44;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid #E8671A">Photo log</h2><div style="display:flex;flex-wrap:wrap;gap:10px">'+th+'</div></div>';}
+  var html='<!DOCTYPE html><html><head><meta charset="UTF-8"><title>TM Snag - '+site+'</title><style>body{font-family:Arial,sans-serif;font-size:12px;color:#222;margin:0;padding:20px}table{width:100%;border-collapse:collapse;font-size:11px}th{background:#1A2E44;color:#fff;padding:7px 8px;text-align:left;font-weight:500}tr:nth-child(even) td{background:#f8f9fa}@media print{@page{margin:15mm}}</style></head><body>'
+    +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:12px;border-bottom:3px solid #1A2E44"><div style="display:flex;align-items:center">'+logoHtml+'<div><div style="font-size:20px;font-weight:700;color:#1A2E44">Thula Moya</div><div style="font-size:12px;color:#E8671A;font-weight:600">Solar Installation Snag List</div></div></div><div style="text-align:right;font-size:11px;color:#555;line-height:1.8"><div><b>Site:</b> '+site+'</div><div><b>Client:</b> '+client+'</div><div><b>Type:</b> '+type+'</div><div><b>Inspector:</b> '+ins+'</div><div><b>Date:</b> '+dt+'</div><div><b>Ref:</b> '+ref+'</div></div></div>'
+    +'<div style="display:flex;gap:10px;margin-bottom:16px"><div style="background:#f5f5f5;border-radius:6px;padding:8px;text-align:center;flex:1"><div style="font-size:20px;font-weight:700;color:#1A2E44">'+snags.length+'</div><div style="font-size:10px;color:#666">Total</div></div><div style="background:#f5f5f5;border-radius:6px;padding:8px;text-align:center;flex:1"><div style="font-size:20px;font-weight:700;color:#993C1D">'+op+'</div><div style="font-size:10px;color:#666">Open</div></div><div style="background:#f5f5f5;border-radius:6px;padding:8px;text-align:center;flex:1"><div style="font-size:20px;font-weight:700;color:#3B6D11">'+res+'</div><div style="font-size:10px;color:#666">Resolved</div></div><div style="background:#f5f5f5;border-radius:6px;padding:8px;text-align:center;flex:1"><div style="font-size:20px;font-weight:700;color:#791F1F">'+hi+'</div><div style="font-size:10px;color:#666">High</div></div></div>'
+    +(snags.length?'<table><thead><tr><th>#</th><th>Area</th><th>Description</th><th>Category</th><th>Priority</th><th>Status</th><th>Assigned</th><th>Target</th><th>Notes</th></tr></thead><tbody>'+rows+'</tbody></table>':'<p style="color:#888;text-align:center;padding:2rem">No snags logged.</p>')
+    +phSec+'<div style="margin-top:24px;padding-top:10px;border-top:1px solid #ddd;font-size:10px;color:#aaa;display:flex;justify-content:space-between"><span>Thula Moya - Confidential</span><span>Generated '+new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'})+'</span></div></body></html>';
+  var w=window.open('','_blank');if(w){w.document.write(html);w.document.close();w.onload=function(){w.focus();w.print();};}else{alert('Please allow pop-ups to print.');}
+}
+
+/* INSTALL */
+window.addEventListener('beforeinstallprompt',function(e){
+  e.preventDefault();deferredPrompt=e;
+  var banner=document.getElementById('inst-banner');
+  document.getElementById('inst-msg').innerHTML='📲 <strong>Install Thula Moya Snag List</strong> as an app on your device!';
+  banner.style.display='flex';
+  var ibtn=banner.querySelector('.ibtn');
+  ibtn.textContent='Install now';
+  ibtn.onclick=function(){
+    if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;banner.style.display='none';});}
+  };
+});
+
+function showInstallHelp(){
+  var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream;
+  if(isIOS){alert('Install on iPhone / iPad:\n\n1. Tap the Share button ⬆️ at the bottom of Safari\n2. Tap "Add to Home Screen"\n3. Tap "Add"\n\nThe app icon will appear on your home screen and works offline!');}
+  else{alert('Install on Android:\n\n1. Open this link in Chrome\n2. Tap the three-dot menu ⋮ in the top right\n3. Tap "Add to Home screen"\n4. Tap "Add"\n\nOr tap "Install" in the banner above if it appears.');}
+}
+
+// Show banner for iOS (no beforeinstallprompt support)
+if(/iPad|iPhone|iPod/.test(navigator.userAgent)&&!window.MSStream&&!window.navigator.standalone){
+  document.getElementById('inst-banner').style.display='flex';
+}
+
+/* INIT */
+buildChecklist();
+document.getElementById('f-date').value=new Date().toISOString().slice(0,10);
+</script>
+</body>
+</html>
